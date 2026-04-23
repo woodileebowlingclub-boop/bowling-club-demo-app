@@ -1,908 +1,520 @@
 import React, { useMemo, useState } from "react";
+import {
+  CalendarDays,
+  Bell,
+  Users,
+  Trophy,
+  Shield,
+  UserCog,
+  Phone,
+  Mail,
+  MapPin,
+  Clock3,
+  FileText,
+  ChevronRight,
+  Menu,
+  X,
+} from "lucide-react";
 
-const MEMBER_PIN = "1234";
-const ADMIN_PIN = "9999";
-const CLUB_NAME = "Riverside Bowling Club";
-const CLUB_SUBTITLE = "Demo club app with members, diary, notices and club information";
+const CLUB_NAME = "Rockview Bowling Club";
+const CLUB_SUBTITLE = "Demo club app with fictitious members, fixtures, notices and club information";
 
-const initialNotices = [
+const tabs = [
+  { key: "home", label: "Home", icon: Trophy },
+  { key: "diary", label: "Diary", icon: CalendarDays },
+  { key: "members", label: "Members", icon: Users },
+  { key: "noticeboard", label: "Noticeboard", icon: Bell },
+  { key: "competitions", label: "Competitions", icon: Trophy },
+  { key: "office", label: "Office Bearers", icon: UserCog },
+  { key: "coaches", label: "Coaches", icon: Shield },
+  { key: "documents", label: "Documents", icon: FileText },
+];
+
+const diaryEvents = [
   {
     id: 1,
     title: "Opening Day",
-    text: "Opening Day will take place on Saturday 2nd May at 2.00 pm. Members and guests welcome.",
-    date: "2026-05-02",
-    pinned: true,
+    date: "Saturday 2 May 2026",
+    time: "2:00 pm",
+    location: "Main Green",
+    description: "Members, guests and visitors welcome. Light refreshments in the clubhouse after play.",
   },
   {
     id: 2,
-    title: "Membership Reminder",
-    text: "Membership subscriptions are now due. Please speak to the Treasurer if required.",
-    date: "2026-04-28",
-    pinned: false,
+    title: "Tuesday Practice Evening",
+    date: "Tuesday 5 May 2026",
+    time: "6:30 pm",
+    location: "Club Green",
+    description: "Friendly roll-up for all members. New bowlers welcome to come along and try the game.",
+  },
+  {
+    id: 3,
+    title: "Committee Meeting",
+    date: "Wednesday 13 May 2026",
+    time: "7:00 pm",
+    location: "Clubhouse Lounge",
+    description: "Monthly committee meeting. Office bearers and committee members only.",
+  },
+  {
+    id: 4,
+    title: "Ladies Friendly v Meadowbank",
+    date: "Sunday 17 May 2026",
+    time: "2:00 pm",
+    location: "Away Match",
+    description: "Transport leaves club at 1:00 pm. Smart club tops requested.",
+  },
+  {
+    id: 5,
+    title: "Try Bowls Open Session",
+    date: "Saturday 23 May 2026",
+    time: "11:00 am",
+    location: "Main Green",
+    description: "Open to the local community. Flat shoes only. Bowls can be provided by the club.",
   },
 ];
 
-const initialMembers = [
-  { id: 1, name: "John Smith", section: "Gents" },
-  { id: 2, name: "David Brown", section: "Gents" },
-  { id: 3, name: "Alan Wilson", section: "Gents" },
-  { id: 4, name: "Brian Clark", section: "Gents" },
-  { id: 5, name: "Mary Campbell", section: "Ladies" },
-  { id: 6, name: "Jean Robertson", section: "Ladies" },
-  { id: 7, name: "Anne Stewart", section: "Ladies" },
-  { id: 8, name: "Linda Fraser", section: "Ladies" },
-  { id: 9, name: "Peter Murray", section: "Associate" },
-  { id: 10, name: "Susan Kerr", section: "Associate" },
+const notices = [
+  {
+    id: 1,
+    title: "Membership Offer",
+    body: "New members joining this season receive a reduced introductory subscription for their first year.",
+    date: "Posted 20 April 2026",
+  },
+  {
+    id: 2,
+    title: "Green Maintenance",
+    body: "The green will be closed on Monday morning for cutting and seasonal maintenance. Please avoid practice until 1:00 pm.",
+    date: "Posted 18 April 2026",
+  },
+  {
+    id: 3,
+    title: "Volunteers Required",
+    body: "We are looking for helpers for teas, raffle sales and match-day setup throughout the season.",
+    date: "Posted 16 April 2026",
+  },
 ];
 
-const initialEvents = [
-  { id: 1, title: "Opening Day", date: "2026-05-02", time: "14:00", location: "Club Green", notes: "Members and guests welcome." },
-  { id: 2, title: "Practice Evening", date: "2026-05-05", time: "18:30", location: "Main Green", notes: "Friendly roll-up for all sections." },
-  { id: 3, title: "Committee Meeting", date: "2026-05-12", time: "19:00", location: "Clubhouse", notes: "Committee members only." },
+const members = [
+  { id: 1, name: "James McLaren", section: "Gents", phone: "07700 900101" },
+  { id: 2, name: "Margaret Boyd", section: "Ladies", phone: "07700 900102" },
+  { id: 3, name: "Alan Fraser", section: "Gents", phone: "07700 900103" },
+  { id: 4, name: "Jean Robertson", section: "Ladies", phone: "07700 900104" },
+  { id: 5, name: "Robert Sinclair", section: "Associate", phone: "07700 900105" },
+  { id: 6, name: "Fiona Kerr", section: "Ladies", phone: "07700 900106" },
+  { id: 7, name: "David Thomson", section: "Gents", phone: "07700 900107" },
+  { id: 8, name: "Moira Campbell", section: "Associate", phone: "07700 900108" },
 ];
 
-const initialOfficeBearers = [
-  { id: 1, role: "President", name: "James Robertson" },
-  { id: 2, role: "Vice President", name: "William Craig" },
-  { id: 3, role: "Secretary", name: "Moira Campbell" },
-  { id: 4, role: "Treasurer", name: "Helen Stewart" },
-  { id: 5, role: "Match Secretary", name: "Tom Bennett" },
+const competitions = [
+  {
+    id: 1,
+    name: "Club Singles Championship",
+    entryCloses: "31 May 2026",
+    startDate: "6 June 2026",
+    details: "Open to all full members. Draw will be posted in the clubhouse and app.",
+  },
+  {
+    id: 2,
+    name: "Pairs Knockout",
+    entryCloses: "14 June 2026",
+    startDate: "20 June 2026",
+    details: "Choose your own partner. First round to be completed within two weeks.",
+  },
+  {
+    id: 3,
+    name: "Mixed Triples Day",
+    entryCloses: "1 July 2026",
+    startDate: "11 July 2026",
+    details: "Friendly one-day competition with lunch included in the entry fee.",
+  },
 ];
 
-const initialCoaches = [
-  { id: 1, name: "Gordon Reid", role: "Club Coach", notes: "Tuesday coaching evening." },
-  { id: 2, name: "Sandra McKay", role: "Junior Coach", notes: "Sunday morning beginner sessions." },
+const officeBearers = [
+  {
+    role: "President",
+    name: "William Hart",
+    phone: "07700 900201",
+    email: "president@rockviewbowlingclub.co.uk",
+  },
+  {
+    role: "Secretary",
+    name: "Elaine Morton",
+    phone: "07700 900202",
+    email: "secretary@rockviewbowlingclub.co.uk",
+  },
+  {
+    role: "Treasurer",
+    name: "Gordon McBride",
+    phone: "07700 900203",
+    email: "treasurer@rockviewbowlingclub.co.uk",
+  },
+  {
+    role: "Match Secretary",
+    name: "Sandra Allan",
+    phone: "07700 900204",
+    email: "matches@rockviewbowlingclub.co.uk",
+  },
 ];
 
-const initialDocuments = [
-  { id: 1, title: "Membership Form", category: "Forms", description: "Example membership form for new members." },
-  { id: 2, title: "Fixture List", category: "Fixtures", description: "Example fixture list for the season." },
-  { id: 3, title: "Club Rules", category: "Rules", description: "Example club rules and guidance for members." },
+const coaches = [
+  {
+    id: 1,
+    name: "Peter Lawson",
+    qualification: "Club Coach",
+    phone: "07700 900301",
+    email: "coach1@rockviewbowlingclub.co.uk",
+  },
+  {
+    id: 2,
+    name: "Linda Ferguson",
+    qualification: "Volunteer Coach",
+    phone: "07700 900302",
+    email: "coach2@rockviewbowlingclub.co.uk",
+  },
 ];
 
-function formatDate(dateStr) {
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr;
-  return d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+const documents = [
+  { id: 1, name: "Membership Form 2026", category: "Forms" },
+  { id: 2, name: "Club Constitution", category: "Rules" },
+  { id: 3, name: "Competition Entry Sheet", category: "Competitions" },
+  { id: 4, name: "Fixture List", category: "Fixtures" },
+];
+
+function DemoLogo() {
+  return (
+    <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white/70 bg-white text-2xl font-bold text-sky-800 shadow-md md:h-20 md:w-20">
+      RB
+    </div>
+  );
 }
 
-export default function App() {
-  const [pin, setPin] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
-  const [adminPinInput, setAdminPinInput] = useState("");
-  const [memberPin, setMemberPin] = useState(MEMBER_PIN);
-  const [adminPin, setAdminPin] = useState(ADMIN_PIN);
-  const [newMemberPin, setNewMemberPin] = useState("");
-  const [newAdminPin, setNewAdminPin] = useState("");
-  const [message, setMessage] = useState("");
-  const [tab, setTab] = useState("home");
-  const [memberSearch, setMemberSearch] = useState("");
-
-  const [notices, setNotices] = useState(initialNotices);
-  const [members, setMembers] = useState(initialMembers);
-  const [events, setEvents] = useState(initialEvents);
-  const [officeBearers, setOfficeBearers] = useState(initialOfficeBearers);
-  const [coaches, setCoaches] = useState(initialCoaches);
-  const [documents, setDocuments] = useState(initialDocuments);
-
-  const [noticeTitle, setNoticeTitle] = useState("");
-  const [noticeText, setNoticeText] = useState("");
-  const [noticeDate, setNoticeDate] = useState("");
-  const [noticePinned, setNoticePinned] = useState(false);
-
-  const [memberName, setMemberName] = useState("");
-  const [memberSection, setMemberSection] = useState("Gents");
-
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventDate, setEventDate] = useState("");
-  const [eventTime, setEventTime] = useState("");
-  const [eventLocation, setEventLocation] = useState("");
-  const [eventNotes, setEventNotes] = useState("");
-
-  const [documentTitle, setDocumentTitle] = useState("");
-  const [documentCategory, setDocumentCategory] = useState("General");
-  const [documentDescription, setDocumentDescription] = useState("");
-
-  const sortedNotices = useMemo(() => {
-    return [...notices].sort((a, b) => {
-      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-      return new Date(b.date) - new Date(a.date);
-    });
-  }, [notices]);
-
-  const filteredMembers = useMemo(() => {
-    const search = memberSearch.trim().toLowerCase();
-    if (!search) return members;
-    return members.filter(
-      (m) => m.name.toLowerCase().includes(search) || m.section.toLowerCase().includes(search)
-    );
-  }, [members, memberSearch]);
-
-  const counts = useMemo(() => {
-    const gents = members.filter((m) => m.section === "Gents").length;
-    const ladies = members.filter((m) => m.section === "Ladies").length;
-    const associate = members.filter((m) => m.section === "Associate").length;
-    return { gents, ladies, associate, total: members.length };
-  }, [members]);
-
-  function handleLogin() {
-    if (pin === memberPin) {
-      setLoggedIn(true);
-      setAdminUnlocked(false);
-      setMessage("");
-    } else if (pin === adminPin) {
-      setLoggedIn(true);
-      setAdminUnlocked(true);
-      setMessage("");
-    } else {
-      setMessage("Incorrect PIN");
-    }
-  }
-
-  function handleAdminUnlock() {
-    if (adminPinInput === adminPin) {
-      setAdminUnlocked(true);
-      setAdminPinInput("");
-      setMessage("");
-    } else {
-      setMessage("Incorrect admin PIN");
-    }
-  }
-
-  function savePinSettings() {
-    if (!newMemberPin && !newAdminPin) {
-      setMessage("Enter a new member PIN or admin PIN");
-      return;
-    }
-    if (newMemberPin) setMemberPin(newMemberPin);
-    if (newAdminPin) setAdminPin(newAdminPin);
-    setNewMemberPin("");
-    setNewAdminPin("");
-    setMessage("PIN settings updated");
-  }
-
-  function saveNotice() {
-    if (!noticeTitle || !noticeText || !noticeDate) {
-      setMessage("Enter notice title, text and date");
-      return;
-    }
-    const item = {
-      id: Date.now(),
-      title: noticeTitle,
-      text: noticeText,
-      date: noticeDate,
-      pinned: noticePinned,
-    };
-    setNotices((prev) => [item, ...prev]);
-    setNoticeTitle("");
-    setNoticeText("");
-    setNoticeDate("");
-    setNoticePinned(false);
-    setMessage("Notice added");
-  }
-
-  function saveMember() {
-    if (!memberName) {
-      setMessage("Enter member name");
-      return;
-    }
-    const item = {
-      id: Date.now(),
-      name: memberName,
-      section: memberSection,
-    };
-    setMembers((prev) => [...prev, item]);
-    setMemberName("");
-    setMemberSection("Gents");
-    setMessage("Member added");
-  }
-
-  function saveEvent() {
-    if (!eventTitle || !eventDate) {
-      setMessage("Enter event title and date");
-      return;
-    }
-    const item = {
-      id: Date.now(),
-      title: eventTitle,
-      date: eventDate,
-      time: eventTime,
-      location: eventLocation,
-      notes: eventNotes,
-    };
-    setEvents((prev) => [...prev, item].sort((a, b) => new Date(a.date) - new Date(b.date)));
-    setEventTitle("");
-    setEventDate("");
-    setEventTime("");
-    setEventLocation("");
-    setEventNotes("");
-    setMessage("Diary entry added");
-  }
-
-  function saveDocument() {
-    if (!documentTitle) {
-      setMessage("Enter document title");
-      return;
-    }
-    const item = {
-      id: Date.now(),
-      title: documentTitle,
-      category: documentCategory,
-      description: documentDescription,
-    };
-    setDocuments((prev) => [item, ...prev]);
-    setDocumentTitle("");
-    setDocumentCategory("General");
-    setDocumentDescription("");
-    setMessage("Document added");
-  }
-
-  function removeItem(setter, id, itemName) {
-    setter((prev) => prev.filter((item) => item.id !== id));
-    setMessage(`${itemName} removed`);
-  }
-
-  if (!loggedIn) {
-    return (
-      <div style={styles.page}>
-        <div style={styles.loginWrap}>
-          <div style={styles.loginCard}>
-            <div style={styles.logoLarge}>RB</div>
-            <h1 style={styles.loginTitle}>{CLUB_NAME}</h1>
-            <p style={styles.loginSubtitle}>{CLUB_SUBTITLE}</p>
-            <input
-              type="password"
-              placeholder="Enter PIN"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={handleLogin} style={styles.buttonPrimary}>Enter</button>
-            <div style={styles.hint}>Demo member PIN: {memberPin}</div>
-            {message && <div style={styles.message}>{message}</div>}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+function SectionCard({ title, children, actionText }) {
   return (
-    <div style={styles.page}>
-      <div style={styles.wrap}>
-        <div style={styles.topCard}>
-          <div style={styles.topRow}>
-            <div style={styles.logoSmall}>RB</div>
-            <div>
-              <h1 style={styles.title}>{CLUB_NAME}</h1>
-              <p style={styles.subtitle}>{CLUB_SUBTITLE}</p>
-            </div>
-          </div>
-        </div>
+    <section className="rounded-3xl border border-slate-200 bg-white/95 p-5 shadow-sm md:p-7">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-2xl font-bold text-sky-900">{title}</h2>
+        {actionText ? (
+          <button className="inline-flex items-center gap-1 rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50">
+            {actionText}
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        ) : null}
+      </div>
+      {children}
+    </section>
+  );
+}
 
-        <div style={styles.tabsCard}>
-          <div style={styles.tabsGrid}>
-            {[
-              ["home", "HOME"],
-              ["diary", "DIARY"],
-              ["members", "MEMBERS"],
-              ["notices", "NOTICEBOARD"],
-              ["documents", "RULES"],
-              ["office", "OFFICE BEARERS"],
-              ["coaches", "COACHES"],
-              ["admin", "ADMIN"],
-            ].map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setTab(key)}
-                style={tab === key ? styles.activeTabButton : styles.tabButton}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
+function EventCard({ item }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
+      <h3 className="text-xl font-bold text-sky-900">{item.title}</h3>
+      <div className="mt-2 space-y-1 text-slate-700">
+        <div className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> {item.date}</div>
+        <div className="flex items-center gap-2"><Clock3 className="h-4 w-4" /> {item.time}</div>
+        <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {item.location}</div>
+      </div>
+      <p className="mt-3 text-base text-slate-800">{item.description}</p>
+    </div>
+  );
+}
 
-        {message && <div style={styles.messageBar}>{message}</div>}
-
-        {tab === "home" && (
-          <>
-            <div style={styles.statsGrid}>
-              <div style={styles.statCard}>
-                <div style={styles.statTitle}>Gents</div>
-                <div style={styles.statNumber}>{counts.gents}</div>
-                <div style={styles.statText}>Full members</div>
-              </div>
-              <div style={styles.statCard}>
-                <div style={styles.statTitle}>Ladies</div>
-                <div style={styles.statNumber}>{counts.ladies}</div>
-                <div style={styles.statText}>Full members</div>
-              </div>
-              <div style={styles.statCard}>
-                <div style={styles.statTitle}>Associate</div>
-                <div style={styles.statNumber}>{counts.associate}</div>
-                <div style={styles.statText}>Associate members</div>
-              </div>
-              <div style={styles.statCard}>
-                <div style={styles.statTitle}>Total Members</div>
-                <div style={styles.statNumber}>{counts.total}</div>
-                <div style={styles.statText}>All sections</div>
-              </div>
-            </div>
-
-            <div style={styles.twoColGrid}>
-              <div style={styles.sectionCard}>
-                <h3 style={styles.sectionHeading}>Latest Notices</h3>
-                {sortedNotices.slice(0, 3).map((notice) => (
-                  <div key={notice.id} style={styles.listCard}>
-                    <div style={styles.listTitle}>{notice.title}{notice.pinned ? " • Pinned" : ""}</div>
-                    <div style={styles.listMeta}>{formatDate(notice.date)}</div>
-                    <div>{notice.text}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div style={styles.sectionCard}>
-                <h3 style={styles.sectionHeading}>Upcoming Diary</h3>
-                {events.slice(0, 3).map((event) => (
-                  <div key={event.id} style={styles.listCard}>
-                    <div style={styles.listTitle}>{event.title}</div>
-                    <div style={styles.listMeta}>
-                      {formatDate(event.date)}{event.time ? ` • ${event.time}` : ""}
-                    </div>
-                    {event.location && <div>{event.location}</div>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {tab === "diary" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Diary</h3>
-            {events.map((event) => (
-              <div key={event.id} style={styles.listCard}>
-                <div style={styles.listTitle}>{event.title}</div>
-                <div style={styles.listMeta}>
-                  {formatDate(event.date)}{event.time ? ` • ${event.time}` : ""}
-                </div>
-                {event.location && <div>{event.location}</div>}
-                {event.notes && <div>{event.notes}</div>}
-                {adminUnlocked && (
-                  <button style={styles.removeButton} onClick={() => removeItem(setEvents, event.id, "Diary entry")}>
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "members" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Members</h3>
-            <input
-              type="text"
-              placeholder="Search members"
-              value={memberSearch}
-              onChange={(e) => setMemberSearch(e.target.value)}
-              style={styles.input}
-            />
-
-            <h4 style={styles.subHeading}>Gents</h4>
-            {filteredMembers.filter((m) => m.section === "Gents").map((m) => (
-              <div key={m.id} style={styles.memberRow}>{m.name}</div>
-            ))}
-
-            <h4 style={styles.subHeading}>Ladies</h4>
-            {filteredMembers.filter((m) => m.section === "Ladies").map((m) => (
-              <div key={m.id} style={styles.memberRow}>{m.name}</div>
-            ))}
-
-            <h4 style={styles.subHeading}>Associate</h4>
-            {filteredMembers.filter((m) => m.section === "Associate").map((m) => (
-              <div key={m.id} style={styles.memberRow}>{m.name}</div>
-            ))}
-          </div>
-        )}
-
-        {tab === "notices" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Noticeboard</h3>
-            {sortedNotices.map((notice) => (
-              <div key={notice.id} style={styles.listCard}>
-                <div style={styles.listTitle}>{notice.title}{notice.pinned ? " • Pinned" : ""}</div>
-                <div style={styles.listMeta}>{formatDate(notice.date)}</div>
-                <div>{notice.text}</div>
-                {adminUnlocked && (
-                  <button style={styles.removeButton} onClick={() => removeItem(setNotices, notice.id, "Notice")}>
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "documents" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Rules and Documents</h3>
-            {documents.map((doc) => (
-              <div key={doc.id} style={styles.listCard}>
-                <div style={styles.listTitle}>{doc.title}</div>
-                <div style={styles.listMeta}>{doc.category}</div>
-                <div>{doc.description}</div>
-                {adminUnlocked && (
-                  <button style={styles.removeButton} onClick={() => removeItem(setDocuments, doc.id, "Document")}>
-                    Remove
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "office" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Office Bearers</h3>
-            {officeBearers.map((item) => (
-              <div key={item.id} style={styles.listCard}>
-                <div style={styles.listTitle}>{item.role}</div>
-                <div>{item.name}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "coaches" && (
-          <div style={styles.sectionCard}>
-            <h3 style={styles.sectionHeading}>Club Coaches</h3>
-            {coaches.map((coach) => (
-              <div key={coach.id} style={styles.listCard}>
-                <div style={styles.listTitle}>{coach.name}</div>
-                <div style={styles.listMeta}>{coach.role}</div>
-                {coach.notes && <div>{coach.notes}</div>}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {tab === "admin" && (
-          <div style={styles.sectionCard}>
-            {!adminUnlocked ? (
-              <div style={styles.adminLockBox}>
-                <h3 style={styles.sectionHeading}>Admin Login</h3>
-                <input
-                  type="password"
-                  placeholder="Enter admin PIN"
-                  value={adminPinInput}
-                  onChange={(e) => setAdminPinInput(e.target.value)}
-                  style={styles.input}
-                />
-                <button onClick={handleAdminUnlock} style={styles.buttonPrimary}>Enter</button>
-                <div style={styles.hint}>Demo admin PIN: {adminPin}</div>
-              </div>
-            ) : (
-              <div style={styles.adminGrid}>
-                <div style={styles.adminCard}>
-                  <h3 style={styles.sectionHeading}>PIN Settings</h3>
-                  <div style={styles.infoLine}>Current member PIN: {memberPin}</div>
-                  <div style={styles.infoLine}>Current admin PIN: {adminPin}</div>
-                  <input
-                    type="password"
-                    placeholder="New member PIN"
-                    value={newMemberPin}
-                    onChange={(e) => setNewMemberPin(e.target.value)}
-                    style={styles.input}
-                  />
-                  <input
-                    type="password"
-                    placeholder="New admin PIN"
-                    value={newAdminPin}
-                    onChange={(e) => setNewAdminPin(e.target.value)}
-                    style={styles.input}
-                  />
-                  <button onClick={savePinSettings} style={styles.buttonPrimary}>Save PIN Settings</button>
-                </div>
-
-                <div style={styles.adminCard}>
-                  <h3 style={styles.sectionHeading}>Add Notice</h3>
-                  <input
-                    type="text"
-                    placeholder="Notice title"
-                    value={noticeTitle}
-                    onChange={(e) => setNoticeTitle(e.target.value)}
-                    style={styles.input}
-                  />
-                  <textarea
-                    placeholder="Notice text"
-                    value={noticeText}
-                    onChange={(e) => setNoticeText(e.target.value)}
-                    style={styles.textarea}
-                  />
-                  <input
-                    type="date"
-                    value={noticeDate}
-                    onChange={(e) => setNoticeDate(e.target.value)}
-                    style={styles.input}
-                  />
-                  <label style={styles.checkboxRow}>
-                    <input
-                      type="checkbox"
-                      checked={noticePinned}
-                      onChange={(e) => setNoticePinned(e.target.checked)}
-                    />
-                    Pinned notice
-                  </label>
-                  <button onClick={saveNotice} style={styles.buttonPrimary}>Save Notice</button>
-                </div>
-
-                <div style={styles.adminCard}>
-                  <h3 style={styles.sectionHeading}>Add Member</h3>
-                  <input
-                    type="text"
-                    placeholder="Member name"
-                    value={memberName}
-                    onChange={(e) => setMemberName(e.target.value)}
-                    style={styles.input}
-                  />
-                  <select
-                    value={memberSection}
-                    onChange={(e) => setMemberSection(e.target.value)}
-                    style={styles.input}
-                  >
-                    <option>Gents</option>
-                    <option>Ladies</option>
-                    <option>Associate</option>
-                  </select>
-                  <button onClick={saveMember} style={styles.buttonPrimary}>Save Member</button>
-                </div>
-
-                <div style={styles.adminCard}>
-                  <h3 style={styles.sectionHeading}>Add Diary Entry</h3>
-                  <input
-                    type="text"
-                    placeholder="Event title"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                    style={styles.input}
-                  />
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
-                    style={styles.input}
-                  />
-                  <input
-                    type="time"
-                    value={eventTime}
-                    onChange={(e) => setEventTime(e.target.value)}
-                    style={styles.input}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Location"
-                    value={eventLocation}
-                    onChange={(e) => setEventLocation(e.target.value)}
-                    style={styles.input}
-                  />
-                  <textarea
-                    placeholder="Notes"
-                    value={eventNotes}
-                    onChange={(e) => setEventNotes(e.target.value)}
-                    style={styles.textarea}
-                  />
-                  <button onClick={saveEvent} style={styles.buttonPrimary}>Save Diary Entry</button>
-                </div>
-
-                <div style={styles.adminCard}>
-                  <h3 style={styles.sectionHeading}>Add Document</h3>
-                  <input
-                    type="text"
-                    placeholder="Document title"
-                    value={documentTitle}
-                    onChange={(e) => setDocumentTitle(e.target.value)}
-                    style={styles.input}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Category"
-                    value={documentCategory}
-                    onChange={(e) => setDocumentCategory(e.target.value)}
-                    style={styles.input}
-                  />
-                  <textarea
-                    placeholder="Description"
-                    value={documentDescription}
-                    onChange={(e) => setDocumentDescription(e.target.value)}
-                    style={styles.textarea}
-                  />
-                  <button onClick={saveDocument} style={styles.buttonPrimary}>Save Document</button>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+function ContactCard({ title, name, phone, email }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">{title}</p>
+      <h3 className="mt-1 text-xl font-bold text-slate-900">{name}</h3>
+      <div className="mt-3 space-y-2 text-slate-700">
+        <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>
+        <div className="flex items-center gap-2 break-all"><Mail className="h-4 w-4" /> {email}</div>
       </div>
     </div>
   );
 }
 
-const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(180deg, #184f6a 0%, #256982 60%, #2f7a94 100%)",
-    padding: 18,
-    fontFamily: "Arial, sans-serif",
-  },
-  wrap: {
-    maxWidth: 1100,
-    margin: "0 auto",
-  },
-  loginWrap: {
-    minHeight: "90vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  loginCard: {
-    width: "100%",
-    maxWidth: 420,
-    background: "#f7f7f7",
-    borderRadius: 24,
-    padding: 28,
-    textAlign: "center",
-    boxShadow: "0 12px 28px rgba(0,0,0,0.18)",
-  },
-  logoLarge: {
-    width: 86,
-    height: 86,
-    borderRadius: "50%",
-    background: "#ffffff",
-    color: "#1d5576",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "0 auto 16px",
-    fontSize: 32,
-    fontWeight: 700,
-  },
-  loginTitle: {
-    margin: 0,
-    color: "#1d5576",
-    fontSize: 34,
-  },
-  loginSubtitle: {
-    marginTop: 8,
-    color: "#4a5c69",
-    fontSize: 18,
-  },
-  topCard: {
-    background: "#f2f2f2",
-    borderRadius: 22,
-    padding: 22,
-    marginBottom: 18,
-    boxShadow: "0 10px 24px rgba(0,0,0,0.12)",
-  },
-  topRow: {
-    display: "flex",
-    gap: 16,
-    alignItems: "center",
-    flexWrap: "wrap",
-  },
-  logoSmall: {
-    width: 56,
-    height: 56,
-    borderRadius: "50%",
-    background: "#ffffff",
-    color: "#1d5576",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 22,
-    fontWeight: 700,
-  },
-  title: {
-    margin: 0,
-    color: "#ffffff",
-    fontSize: 30,
-  },
-  subtitle: {
-    marginTop: 6,
-    marginBottom: 0,
-    color: "#dbe7ef",
-    fontSize: 15,
-  },
-  tabsCard: {
-    background: "rgba(197, 215, 239, 0.4)",
-    borderRadius: 22,
-    padding: 10,
-    marginBottom: 18,
-  },
-  tabsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-    gap: 10,
-  },
-  tabButton: {
-    padding: "16px 12px",
-    borderRadius: 16,
-    border: "none",
-    background: "transparent",
-    color: "#0f2f4f",
-    fontWeight: 700,
-    cursor: "pointer",
-  },
-  activeTabButton: {
-    padding: "16px 12px",
-    borderRadius: 16,
-    border: "none",
-    background: "#ffffff",
-    color: "#123f69",
-    fontWeight: 700,
-    cursor: "pointer",
-  },
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: 18,
-    marginBottom: 18,
-  },
-  statCard: {
-    background: "#f5f5f5",
-    borderRadius: 24,
-    padding: 24,
-    border: "3px solid #66d0ff",
-    boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
-  },
-  statTitle: {
-    color: "#14499b",
-    fontSize: 22,
-    fontWeight: 700,
-    marginBottom: 18,
-  },
-  statNumber: {
-    color: "#14499b",
-    fontSize: 54,
-    fontWeight: 700,
-    lineHeight: 1,
-    marginBottom: 8,
-  },
-  statText: {
-    color: "#4a6074",
-    fontSize: 16,
-  },
-  twoColGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: 18,
-  },
-  sectionCard: {
-    background: "#f5f5f5",
-    borderRadius: 24,
-    padding: 24,
-    boxShadow: "0 8px 18px rgba(0,0,0,0.08)",
-  },
-  sectionHeading: {
-    marginTop: 0,
-    color: "#14499b",
-    fontSize: 22,
-    marginBottom: 16,
-  },
-  subHeading: {
-    color: "#14499b",
-    marginTop: 18,
-    marginBottom: 10,
-  },
-  listCard: {
-    background: "#ffffff",
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 12,
-    border: "1px solid #d5e0ea",
-  },
-  listTitle: {
-    fontWeight: 700,
-    color: "#163f78",
-    marginBottom: 6,
-  },
-  listMeta: {
-    color: "#5f7280",
-    fontSize: 14,
-    marginBottom: 6,
-  },
-  memberRow: {
-    background: "#ffffff",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    border: "1px solid #d5e0ea",
-  },
-  adminGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: 16,
-  },
-  adminCard: {
-    background: "#ffffff",
-    borderRadius: 18,
-    padding: 18,
-    border: "1px solid #d5e0ea",
-  },
-  adminLockBox: {
-    maxWidth: 420,
-  },
-  input: {
-    width: "100%",
-    padding: "11px 12px",
-    borderRadius: 10,
-    border: "1px solid #c5d0d8",
-    fontSize: 14,
-    marginBottom: 10,
-    boxSizing: "border-box",
-  },
-  textarea: {
-    width: "100%",
-    minHeight: 88,
-    padding: "11px 12px",
-    borderRadius: 10,
-    border: "1px solid #c5d0d8",
-    fontSize: 14,
-    marginBottom: 10,
-    boxSizing: "border-box",
-    resize: "vertical",
-    fontFamily: "Arial, sans-serif",
-  },
-  buttonPrimary: {
-    padding: "11px 16px",
-    borderRadius: 10,
-    border: "none",
-    background: "#14499b",
-    color: "#fff",
-    fontWeight: 700,
-    cursor: "pointer",
-  },
-  removeButton: {
-    marginTop: 10,
-    padding: "8px 12px",
-    borderRadius: 8,
-    border: "none",
-    background: "#b00020",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: 700,
-  },
-  checkboxRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 12,
-    color: "#355064",
-  },
-  infoLine: {
-    marginBottom: 10,
-    color: "#355064",
-  },
-  hint: {
-    marginTop: 12,
-    color: "#355064",
-  },
-  message: {
-    marginTop: 12,
-    color: "#b00020",
-    fontWeight: 700,
-  },
-  messageBar: {
-    background: "#ffffff",
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 16,
-    color: "#14499b",
-    fontWeight: 700,
-  },
-};
+export default function App() {
+  const [activeTab, setActiveTab] = useState("home");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [memberSearch, setMemberSearch] = useState("");
+
+  const filteredMembers = useMemo(() => {
+    const q = memberSearch.trim().toLowerCase();
+    if (!q) return members;
+    return members.filter(
+      (m) =>
+        m.name.toLowerCase().includes(q) ||
+        m.section.toLowerCase().includes(q) ||
+        m.phone.toLowerCase().includes(q)
+    );
+  }, [memberSearch]);
+
+  const renderHome = () => (
+    <div className="space-y-6">
+      <SectionCard title="Welcome" actionText="View diary">
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="md:col-span-2">
+            <p className="text-lg leading-8 text-slate-800">
+              Welcome to the demo version of a modern bowling club app. This sample uses fictional names,
+              fictional events and example club information so you can show other clubs how a members app
+              could look before using real data.
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl bg-sky-50 p-4">
+                <p className="text-sm font-semibold text-sky-700">Members</p>
+                <p className="mt-1 text-3xl font-bold text-sky-900">82</p>
+              </div>
+              <div className="rounded-2xl bg-sky-50 p-4">
+                <p className="text-sm font-semibold text-sky-700">Events this month</p>
+                <p className="mt-1 text-3xl font-bold text-sky-900">9</p>
+              </div>
+              <div className="rounded-2xl bg-sky-50 p-4">
+                <p className="text-sm font-semibold text-sky-700">Competitions open</p>
+                <p className="mt-1 text-3xl font-bold text-sky-900">3</p>
+              </div>
+              <div className="rounded-2xl bg-sky-50 p-4">
+                <p className="text-sm font-semibold text-sky-700">Coaches</p>
+                <p className="mt-1 text-3xl font-bold text-sky-900">2</p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-3xl bg-gradient-to-br from-sky-700 to-cyan-700 p-5 text-white shadow-lg">
+            <h3 className="text-xl font-bold">Quick Information</h3>
+            <div className="mt-4 space-y-3 text-sm md:text-base">
+              <p><span className="font-semibold">Club Night:</span> Tuesday at 6:30 pm</p>
+              <p><span className="font-semibold">Address:</span> 18 Riverside Avenue, Glasgow</p>
+              <p><span className="font-semibold">Visitors:</span> Always welcome</p>
+              <p><span className="font-semibold">Dress:</span> Smart casual for social events</p>
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <SectionCard title="Next Events" actionText="Open diary">
+          <div className="space-y-4">
+            {diaryEvents.slice(0, 3).map((event) => (
+              <EventCard key={event.id} item={event} />
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Latest Notices" actionText="Open noticeboard">
+          <div className="space-y-4">
+            {notices.map((notice) => (
+              <div key={notice.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <h3 className="text-xl font-bold text-sky-900">{notice.title}</h3>
+                <p className="mt-2 text-slate-800">{notice.body}</p>
+                <p className="mt-3 text-sm text-slate-500">{notice.date}</p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+      </div>
+    </div>
+  );
+
+  const renderDiary = () => (
+    <SectionCard title="Diary">
+      <div className="space-y-4">
+        {diaryEvents.map((event) => (
+          <EventCard key={event.id} item={event} />
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderMembers = () => (
+    <SectionCard title="Members Directory">
+      <div className="mb-5">
+        <input
+          type="text"
+          value={memberSearch}
+          onChange={(e) => setMemberSearch(e.target.value)}
+          placeholder="Search members by name, section or phone"
+          className="w-full rounded-2xl border border-slate-300 px-4 py-3 text-base outline-none ring-0 transition focus:border-sky-500"
+        />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {filteredMembers.map((member) => (
+          <div key={member.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>
+            <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-sky-700">{member.section}</p>
+            <p className="mt-3 flex items-center gap-2 text-slate-700"><Phone className="h-4 w-4" /> {member.phone}</p>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderNoticeboard = () => (
+    <SectionCard title="Noticeboard">
+      <div className="space-y-4">
+        {notices.map((notice) => (
+          <div key={notice.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <h3 className="text-xl font-bold text-sky-900">{notice.title}</h3>
+            <p className="mt-2 text-slate-800">{notice.body}</p>
+            <p className="mt-3 text-sm text-slate-500">{notice.date}</p>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderCompetitions = () => (
+    <SectionCard title="Competitions">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        {competitions.map((item) => (
+          <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <h3 className="text-xl font-bold text-sky-900">{item.name}</h3>
+            <p className="mt-3 text-slate-700"><span className="font-semibold">Entry closes:</span> {item.entryCloses}</p>
+            <p className="mt-1 text-slate-700"><span className="font-semibold">Starts:</span> {item.startDate}</p>
+            <p className="mt-3 text-slate-800">{item.details}</p>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderOffice = () => (
+    <SectionCard title="Office Bearers">
+      <div className="grid gap-4 lg:grid-cols-2">
+        {officeBearers.map((person) => (
+          <ContactCard
+            key={person.role}
+            title={person.role}
+            name={person.name}
+            phone={person.phone}
+            email={person.email}
+          />
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderCoaches = () => (
+    <SectionCard title="Club Coaches">
+      <div className="grid gap-4 lg:grid-cols-2">
+        {coaches.map((coach) => (
+          <ContactCard
+            key={coach.id}
+            title={coach.qualification}
+            name={coach.name}
+            phone={coach.phone}
+            email={coach.email}
+          />
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderDocuments = () => (
+    <SectionCard title="Documents">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {documents.map((doc) => (
+          <div key={doc.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="mb-3 inline-flex rounded-full bg-sky-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-sky-800">
+              {doc.category}
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">{doc.name}</h3>
+            <button className="mt-4 inline-flex items-center gap-2 rounded-full bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800">
+              View document
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </SectionCard>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "diary":
+        return renderDiary();
+      case "members":
+        return renderMembers();
+      case "noticeboard":
+        return renderNoticeboard();
+      case "competitions":
+        return renderCompetitions();
+      case "office":
+        return renderOffice();
+      case "coaches":
+        return renderCoaches();
+      case "documents":
+        return renderDocuments();
+      default:
+        return renderHome();
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-sky-900 via-cyan-800 to-sky-700 p-4 md:p-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="rounded-[2rem] bg-white/90 p-5 shadow-xl backdrop-blur md:p-7">
+          <div className="flex items-center gap-4 md:gap-6">
+            <DemoLogo />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-3xl font-black tracking-tight text-slate-900 md:text-5xl">{CLUB_NAME}</h1>
+              <p className="mt-2 text-sm text-slate-600 md:text-xl">{CLUB_SUBTITLE}</p>
+            </div>
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="inline-flex rounded-2xl border border-slate-200 p-3 text-slate-700 md:hidden"
+            >
+              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+        </header>
+
+        <nav className="rounded-[2rem] bg-sky-100/55 p-3 shadow-lg backdrop-blur">
+          <div className="hidden flex-wrap gap-3 md:flex">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const active = activeTab === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-bold transition md:text-base ${
+                    active
+                      ? "bg-white text-sky-900 shadow"
+                      : "bg-transparent text-sky-950 hover:bg-white/60"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {mobileOpen ? (
+            <div className="grid gap-2 md:hidden">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => {
+                      setActiveTab(tab.key);
+                      setMobileOpen(false);
+                    }}
+                    className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                      active ? "bg-white text-sky-900 shadow" : "text-sky-950 hover:bg-white/60"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </nav>
+
+        <main>{renderContent()}</main>
+      </div>
+    </div>
+  );
+}
