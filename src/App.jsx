@@ -1,33 +1,17 @@
 import React, { useMemo, useState } from "react";
-import {
-  CalendarDays,
-  Bell,
-  Users,
-  Trophy,
-  Shield,
-  UserCog,
-  Phone,
-  Mail,
-  MapPin,
-  Clock3,
-  FileText,
-  ChevronRight,
-  Menu,
-  X,
-} from "lucide-react";
 
 const CLUB_NAME = "Rockview Bowling Club";
 const CLUB_SUBTITLE = "Demo club app with fictitious members, fixtures, notices and club information";
 
 const tabs = [
-  { key: "home", label: "Home", icon: Trophy },
-  { key: "diary", label: "Diary", icon: CalendarDays },
-  { key: "members", label: "Members", icon: Users },
-  { key: "noticeboard", label: "Noticeboard", icon: Bell },
-  { key: "competitions", label: "Competitions", icon: Trophy },
-  { key: "office", label: "Office Bearers", icon: UserCog },
-  { key: "coaches", label: "Coaches", icon: Shield },
-  { key: "documents", label: "Documents", icon: FileText },
+  { key: "home", label: "Home", icon: "🏠" },
+  { key: "diary", label: "Diary", icon: "📅" },
+  { key: "members", label: "Members", icon: "👥" },
+  { key: "noticeboard", label: "Noticeboard", icon: "📌" },
+  { key: "competitions", label: "Competitions", icon: "🏆" },
+  { key: "office", label: "Office Bearers", icon: "🧾" },
+  { key: "coaches", label: "Coaches", icon: "🎯" },
+  { key: "documents", label: "Documents", icon: "📄" },
 ];
 
 const diaryEvents = [
@@ -196,7 +180,7 @@ function SectionCard({ title, children, actionText }) {
         {actionText ? (
           <button className="inline-flex items-center gap-1 rounded-full border border-sky-200 px-4 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50">
             {actionText}
-            <ChevronRight className="h-4 w-4" />
+            <span>→</span>
           </button>
         ) : null}
       </div>
@@ -210,9 +194,9 @@ function EventCard({ item }) {
     <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 md:p-5">
       <h3 className="text-xl font-bold text-sky-900">{item.title}</h3>
       <div className="mt-2 space-y-1 text-slate-700">
-        <div className="flex items-center gap-2"><CalendarDays className="h-4 w-4" /> {item.date}</div>
-        <div className="flex items-center gap-2"><Clock3 className="h-4 w-4" /> {item.time}</div>
-        <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {item.location}</div>
+        <div className="flex items-center gap-2"><span>📅</span> {item.date}</div>
+        <div className="flex items-center gap-2"><span>🕒</span> {item.time}</div>
+        <div className="flex items-center gap-2"><span>📍</span> {item.location}</div>
       </div>
       <p className="mt-3 text-base text-slate-800">{item.description}</p>
     </div>
@@ -225,8 +209,8 @@ function ContactCard({ title, name, phone, email }) {
       <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">{title}</p>
       <h3 className="mt-1 text-xl font-bold text-slate-900">{name}</h3>
       <div className="mt-3 space-y-2 text-slate-700">
-        <div className="flex items-center gap-2"><Phone className="h-4 w-4" /> {phone}</div>
-        <div className="flex items-center gap-2 break-all"><Mail className="h-4 w-4" /> {email}</div>
+        <div className="flex items-center gap-2"><span>📞</span> {phone}</div>
+        <div className="flex items-center gap-2 break-all"><span>✉️</span> {email}</div>
       </div>
     </div>
   );
@@ -339,7 +323,7 @@ export default function App() {
           <div key={member.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <h3 className="text-xl font-bold text-slate-900">{member.name}</h3>
             <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-sky-700">{member.section}</p>
-            <p className="mt-3 flex items-center gap-2 text-slate-700"><Phone className="h-4 w-4" /> {member.phone}</p>
+            <p className="mt-3 flex items-center gap-2 text-slate-700"><span>📞</span> {member.phone}</p>
           </div>
         ))}
       </div>
@@ -418,7 +402,7 @@ export default function App() {
             <h3 className="text-lg font-bold text-slate-900">{doc.name}</h3>
             <button className="mt-4 inline-flex items-center gap-2 rounded-full bg-sky-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-800">
               View document
-              <ChevronRight className="h-4 w-4" />
+              <span>→</span>
             </button>
           </div>
         ))}
@@ -461,7 +445,7 @@ export default function App() {
               onClick={() => setMobileOpen((v) => !v)}
               className="inline-flex rounded-2xl border border-slate-200 p-3 text-slate-700 md:hidden"
             >
-              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileOpen ? <span className="text-xl">✕</span> : <span className="text-xl">☰</span>}
             </button>
           </div>
         </header>
@@ -469,7 +453,6 @@ export default function App() {
         <nav className="rounded-[2rem] bg-sky-100/55 p-3 shadow-lg backdrop-blur">
           <div className="hidden flex-wrap gap-3 md:flex">
             {tabs.map((tab) => {
-              const Icon = tab.icon;
               const active = activeTab === tab.key;
               return (
                 <button
@@ -481,7 +464,7 @@ export default function App() {
                       : "bg-transparent text-sky-950 hover:bg-white/60"
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
+                  <span>{tab.icon}</span>
                   {tab.label}
                 </button>
               );
@@ -491,7 +474,6 @@ export default function App() {
           {mobileOpen ? (
             <div className="grid gap-2 md:hidden">
               {tabs.map((tab) => {
-                const Icon = tab.icon;
                 const active = activeTab === tab.key;
                 return (
                   <button
@@ -504,7 +486,7 @@ export default function App() {
                       active ? "bg-white text-sky-900 shadow" : "text-sky-950 hover:bg-white/60"
                     }`}
                   >
-                    <Icon className="h-4 w-4" />
+                    <span>{tab.icon}</span>
                     {tab.label}
                   </button>
                 );
