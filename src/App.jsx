@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const CLUB_NAME = "Rock Bowling Club";
+const CLUB_NAME = "Rockview Bowling Club";
 const CLUB_SUBTITLE = "Friendship • Sport • Community";
 
 export default function App() {
