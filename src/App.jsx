@@ -1,258 +1,155 @@
-import React, { useState } from "react";
-import "./App.css";
-import logo from "./assets/lenzie-logo.png";
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1df2f;
+}
 
-const DEFAULT_ADMIN_PIN = "1234";
-const DEFAULT_MEMBER_PIN = "2026";
+.login-page,
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1d1a7a 0%, #2c2fa3 45%, #f1df2f 100%);
+  color: #1d1a7a;
+  padding: 30px;
+  box-sizing: border-box;
+}
 
-export default function App() {
-  const [enteredPin, setEnteredPin] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [adminMode, setAdminMode] = useState(false);
+.login-box,
+.content {
+  max-width: 950px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 6px solid #1d1a7a;
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
 
-  const [adminPin, setAdminPin] = useState(
-    localStorage.getItem("lenzieAdminPin") || DEFAULT_ADMIN_PIN
-  );
+.logo {
+  width: 180px;
+  display: block;
+  margin: 0 auto 20px;
+}
 
-  const [memberPin, setMemberPin] = useState(
-    localStorage.getItem("lenzieMemberPin") || DEFAULT_MEMBER_PIN
-  );
+.small-logo {
+  width: 95px;
+  height: 95px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 50%;
+  border: 4px solid #f1df2f;
+  padding: 6px;
+}
 
-  const [newAdminPin, setNewAdminPin] = useState("");
-  const [newMemberPin, setNewMemberPin] = useState("");
+.header {
+  max-width: 950px;
+  margin: 0 auto 20px;
+  background: #1d1a7a;
+  color: #ffffff;
+  border: 5px solid #f1df2f;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  const [notices, setNotices] = useState([
-    {
-      id: 1,
-      title: "Welcome to Lenzie Bowling Club",
-      text: "Welcome to our new club app.",
-    },
-  ]);
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
 
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Opening Day",
-      date: "Saturday 2nd May 2026",
-      time: "2:00pm",
-    },
-  ]);
+h1 {
+  color: #1d1a7a;
+  font-size: 44px;
+  margin: 10px 0;
+  text-align: center;
+}
 
-  const [newNotice, setNewNotice] = useState("");
-  const [newEvent, setNewEvent] = useState("");
-  const [newEventDate, setNewEventDate] = useState("");
-  const [newEventTime, setNewEventTime] = useState("");
+.header h1 {
+  color: #ffffff;
+  margin: 0;
+  text-align: left;
+}
 
-  function login() {
-    if (enteredPin === adminPin) {
-      setLoggedIn(true);
-      setAdminMode(true);
-      return;
-    }
+.header p {
+  color: #f1df2f;
+  margin: 4px 0 0;
+}
 
-    if (enteredPin === memberPin) {
-      setLoggedIn(true);
-      setAdminMode(false);
-      return;
-    }
+h2 {
+  background: #1d1a7a;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border-left: 10px solid #f1df2f;
+}
 
-    alert("Incorrect PIN");
-  }
+h3 {
+  color: #1d1a7a;
+}
 
-  function logout() {
-    setLoggedIn(false);
-    setAdminMode(false);
-    setEnteredPin("");
-  }
+p {
+  font-size: 18px;
+  color: #333333;
+}
 
-  function saveAdminPin() {
-    localStorage.setItem("lenzieAdminPin", newAdminPin);
-    setAdminPin(newAdminPin);
-    setNewAdminPin("");
-    alert("Admin PIN changed");
-  }
+input,
+textarea {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0;
+  font-size: 17px;
+  border: 2px solid #1d1a7a;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
 
-  function saveMemberPin() {
-    localStorage.setItem("lenzieMemberPin", newMemberPin);
-    setMemberPin(newMemberPin);
-    setNewMemberPin("");
-    alert("Member PIN changed");
-  }
+textarea {
+  min-height: 100px;
+}
 
-  function addNotice() {
-    if (!newNotice) return;
+button {
+  background: #1d1a7a;
+  color: #ffffff;
+  border: 3px solid #f1df2f;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    setNotices([
-      {
-        id: Date.now(),
-        title: "Club Notice",
-        text: newNotice,
-      },
-      ...notices,
-    ]);
+button:hover {
+  background: #2c2fa3;
+}
 
-    setNewNotice("");
-  }
+.card {
+  background: #fffbea;
+  border: 3px solid #f1df2f;
+  border-left: 10px solid #1d1a7a;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
 
-  function addEvent() {
-    if (!newEvent) return;
+.admin-box {
+  background: #eef7ee;
+  border: 3px solid #1f8a2c;
+  border-radius: 18px;
+  padding: 18px;
+  margin-top: 20px;
+}
 
-    setEvents([
-      {
-        id: Date.now(),
-        title: newEvent,
-        date: newEventDate,
-        time: newEventTime,
-      },
-      ...events,
-    ]);
+.pin-info {
+  margin-top: 18px;
+  background: #f1df2f;
+  border-radius: 12px;
+  padding: 10px;
+  font-weight: bold;
+}
 
-    setNewEvent("");
-    setNewEventDate("");
-    setNewEventTime("");
-  }
-
-  if (!loggedIn) {
-    return (
-      <div className="login-page">
-        <div className="login-box">
-          <img src={logo} alt="Lenzie Bowling Club" className="logo" />
-
-          <h1>Lenzie Bowling Club</h1>
-
-          <p>Members diary, notices and club information</p>
-
-          <input
-            type="password"
-            placeholder="Enter PIN"
-            value={enteredPin}
-            onChange={(e) => setEnteredPin(e.target.value)}
-          />
-
-          <button onClick={login}>Enter App</button>
-
-          <div className="pin-info">
-            <p>Admin PIN: 1234</p>
-            <p>Member PIN: 2026</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="app">
-      <header className="header">
-        <div className="header-left">
-          <img src={logo} alt="Lenzie Bowling Club" className="small-logo" />
-
-          <div>
-            <h1>Lenzie Bowling Club</h1>
-            <p>Club App</p>
-          </div>
-        </div>
-
-        <button onClick={logout}>Logout</button>
-      </header>
-
-      <div className="content">
-        <div className="section">
-          <h2>Diary Events</h2>
-
-          {events.map((event) => (
-            <div className="card" key={event.id}>
-              <h3>{event.title}</h3>
-              <p>{event.date}</p>
-              <p>{event.time}</p>
-            </div>
-          ))}
-
-          {adminMode && (
-            <div className="admin-box">
-              <h3>Add Event</h3>
-
-              <input
-                placeholder="Event title"
-                value={newEvent}
-                onChange={(e) => setNewEvent(e.target.value)}
-              />
-
-              <input
-                placeholder="Date"
-                value={newEventDate}
-                onChange={(e) => setNewEventDate(e.target.value)}
-              />
-
-              <input
-                placeholder="Time"
-                value={newEventTime}
-                onChange={(e) => setNewEventTime(e.target.value)}
-              />
-
-              <button onClick={addEvent}>Add Event</button>
-            </div>
-          )}
-        </div>
-
-        <div className="section">
-          <h2>Club Notices</h2>
-
-          {notices.map((notice) => (
-            <div className="card" key={notice.id}>
-              <h3>{notice.title}</h3>
-              <p>{notice.text}</p>
-            </div>
-          ))}
-
-          {adminMode && (
-            <div className="admin-box">
-              <h3>Add Notice</h3>
-
-              <textarea
-                placeholder="Notice text"
-                value={newNotice}
-                onChange={(e) => setNewNotice(e.target.value)}
-              />
-
-              <button onClick={addNotice}>Add Notice</button>
-            </div>
-          )}
-        </div>
-
-        {adminMode && (
-          <div className="section">
-            <h2>Admin Settings</h2>
-
-            <div className="admin-box">
-              <h3>Change Admin PIN</h3>
-
-              <input
-                placeholder="New admin PIN"
-                value={newAdminPin}
-                onChange={(e) => setNewAdminPin(e.target.value)}
-              />
-
-              <button onClick={saveAdminPin}>
-                Save Admin PIN
-              </button>
-            </div>
-
-            <div className="admin-box">
-              <h3>Change Member PIN</h3>
-
-              <input
-                placeholder="New member PIN"
-                value={newMemberPin}
-                onChange={(e) => setNewMemberPin(e.target.value)}
-              />
-
-              <button onClick={saveMemberPin}>
-                Save Member PIN
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+.pin-info p {
+  margin: 4px;
+  color: #1d1a7a;
 }
